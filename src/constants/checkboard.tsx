@@ -1,0 +1,48 @@
+import { Board } from "../types/chessboard.d";
+
+export const CHECKBOARD: Board = [
+  [
+    { name: "rook", color: "black", id: "RB_R1", abbr: "R", hasMoved: false },
+    { name: "knight", color: "black", id: "NB_N1", abbr: "N" },
+    { name: "bishop", color: "black", id: "BB_B1", abbr: "B" },
+    { name: "queen", color: "black", id: "QB", abbr: "Q" },
+    { name: "king", color: "black", id: "KB", abbr: "K", hasMoved: false },
+    { name: "bishop", color: "black", id: "BB_B2", abbr: "B" },
+    { name: "knight", color: "black", id: "NB_N2", abbr: "N" },
+    { name: "rook", color: "black", id: "RB_R2", abbr: "R", hasMoved: false },
+  ],
+  [
+    { name: "pawn", color: "black", id: "PB_P1", abbr: "" },
+    { name: "pawn", color: "black", id: "PB_P2", abbr: "" },
+    { name: "pawn", color: "black", id: "PB_P3", abbr: "" },
+    { name: "pawn", color: "black", id: "PB_P4", abbr: "" },
+    { name: "pawn", color: "black", id: "PB_P5", abbr: "" },
+    { name: "pawn", color: "black", id: "PB_P6", abbr: "" },
+    { name: "pawn", color: "black", id: "PB_P7", abbr: "" },
+    { name: "pawn", color: "black", id: "PB_P8", abbr: "" },
+  ],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [
+    { name: "pawn", color: "white", id: "PW_P1", abbr: "" },
+    { name: "pawn", color: "white", id: "PW_P2", abbr: "" },
+    { name: "pawn", color: "white", id: "PW_P3", abbr: "" },
+    { name: "pawn", color: "white", id: "PW_P4", abbr: "" },
+    { name: "pawn", color: "white", id: "PW_P5", abbr: "" },
+    { name: "pawn", color: "white", id: "PW_P6", abbr: "" },
+    { name: "pawn", color: "white", id: "PW_P7", abbr: "" },
+    { name: "pawn", color: "white", id: "PW_P8", abbr: "" },
+  ],
+  [
+    { name: "rook", color: "white", id: "RW_R1", abbr: "R", hasMoved: false },
+    { name: "knight", color: "white", id: "NW_N1", abbr: "N" },
+    { name: "bishop", color: "white", id: "BW_B1", abbr: "B" },
+    { name: "queen", color: "white", id: "QW", abbr: "Q" },
+    { name: "king", color: "white", id: "KW", abbr: "K", hasMoved: false },
+    { name: "bishop", color: "white", id: "BW_B2", abbr: "B" },
+    { name: "knight", color: "white", id: "NW_N2", abbr: "N" },
+    { name: "rook", color: "white", id: "RW_R2", abbr: "R", hasMoved: false },
+  ],
+];
