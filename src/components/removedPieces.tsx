@@ -6,7 +6,7 @@ export const RemovedPieces = () => {
   const { black, white } = removedPieces;
   return (
     <>
-      <div className="grid items-center py-2 w-[230px]">
+      <div className="grid grid-cols-[repeat(auto-fit,_minmax(45px,_1fr))] min-h-[118px] items-center py-2 gap-y-2">
         {white.map((piece, index) => {
           return (
             <div
@@ -19,7 +19,7 @@ export const RemovedPieces = () => {
         })}
       </div>
 
-      <div className="grid items-center py-2 w-[230px]">
+      <div className="grid grid-cols-[repeat(auto-fit,_minmax(45px,_1fr))] min-h-[118px] items-center py-2 gap-y-2">
         {black.map((piece, index) => {
           return (
             <div

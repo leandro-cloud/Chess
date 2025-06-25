@@ -11,68 +11,44 @@ import { isKingInCheck } from "./utils/isKingInCheck";
 import { isCheckMate } from "./utils/isCheckMate";
 import { isSlateMate } from "./utils/isSlateMate";
 import { RemovedPieces } from "./components/removedPieces";
+import { MovesDictionary } from "./components/movesDictionary";
 
 function App() {
-  const {
-    board,
-    pawnPromotion,
-    check,
-    checkMate,
-    tie,
-    setCheck,
-    setCheckMate,
-    setTie,
-    turn,
-  } = useBoardContext();
-
-  useEffect(() => {
-    const { isCheck, kingPosition, attackPiecePosition } = isKingInCheck(
-      board,
-      turn,
-    );
-    if (isCheck) {
-      setCheck(true);
-      setCheckMate(isCheckMate(board, turn, kingPosition, attackPiecePosition));
-    } else {
-      setCheck(false);
-      setTie(isSlateMate(board, turn));
-    }
-  }, [turn, board]);
+  const { pawnPromotion, check, checkMate, tie, turn } = useBoardContext();
 
   return (
     <main
       className={
-        "w-screen h-screen grid grid-cols-4 items-center bg-violet-800 relative px-3"
+        "w-screen h-screen flex flex-col justify-center place-items-center bg-violet-800 relative"
       }
     >
-      <section
-        className="cementery h-screen col-span-1 flex flex-col justify-center py-12 gap-8
-        *:border-2 *:border-white *:rounded-xl *:grid-cols-5 *:grid-rows-3 *:h-[180px]"
-      >
-        <RemovedPieces />
-      </section>
-
-      <div className="col-span-2">
-        <section>
+      <div className="h-full">
+        <section className="h-fit w-[100%]">
           <Turns />
+          <div className="text-white h-4 text-center my-4 font-bold">
+            {check && !checkMate && <Check turn={turn} />}
+          </div>
         </section>
-        <div className="text-white h-4 text-center my-4 font-bold">
-          {check && !checkMate && <Check turn={turn} />}
+
+        <div className="w-full grid grid-cols-[1fr_auto_1fr] gap-6">
+          <section
+            className="flex flex-col gap-8 justify-between
+            *:border-2 *:border-white"
+          >
+            <RemovedPieces />
+          </section>
+
+          <section className={"w-auto h-auto flex flex-col"}>
+            <ChessBoard />
+          </section>
+
+          <section className="overflow-auto w-fit max-h-[400px] border-2 border-white">
+            <MovesDictionary />
+          </section>
         </div>
-        <section
-          className={"w-auto h-auto flex flex-col items-center justify-center"}
-        >
-          <ChessBoard />
-        </section>
+        {checkMate && <CheckMate />}
+        {tie && <Tie />}
       </div>
-
-      {checkMate && <CheckMate />}
-      {tie && <Tie />}
-
-      <div>
-        <section className="w-[150px] h-screen col-span-1"></section>
-      </div>
-
       {pawnPromotion !== false && (
         <section className="flex gap-8 flex-col justify-center items-center bg-black/80 absolute text-center w-[100%] h-[100%] z-20">
           <h2 className="text-white text-xl">

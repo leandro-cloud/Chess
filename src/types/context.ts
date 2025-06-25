@@ -1,5 +1,6 @@
 import { Board, Piece } from "./chessboard.d";
 import { RemovedPiecesType } from "./color";
+import { pawnPromotionType } from "./pawnPromotionType.d";
 
 export interface updateBoardType {
   item: Piece | null;
@@ -12,9 +13,9 @@ export interface updateBoardType {
 export interface BoardContextType {
   board: Board;
   setBoard: React.Dispatch<React.SetStateAction<Board>>;
-  pawnPromotion: boolean | [number, number];
+  pawnPromotion: boolean | pawnPromotionType;
   setPawnPromotion: React.Dispatch<
-    React.SetStateAction<boolean | [number, number]>
+    React.SetStateAction<boolean | pawnPromotionType>
   >;
   check: boolean;
   tie: boolean;
@@ -33,5 +34,5 @@ export interface BoardContextType {
     endSquare,
   }: updateBoardType) => void;
   turn: "white" | "black";
-  handlePawnPromotion: (piece: string) => void;
+  handlePawnPromotion: (piece: { name: string; abbr: string }) => void;
 }

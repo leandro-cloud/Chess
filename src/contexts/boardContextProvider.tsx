@@ -8,6 +8,8 @@ import { TURNS } from "../constants/turns";
 import { checkValidMoves } from "../utils/checkValidMoves";
 import { coloneBoard } from "../utils/coloneBoard";
 import { updateBoardType } from "../types/context";
+import { checkMoveResult } from "../utils/checkMoveResult";
+import { pawnPromotionType } from "../types/pawnPromotionType.d";
 
 const removedPiecesInitialState = {
   black: [],
@@ -17,7 +19,7 @@ const removedPiecesInitialState = {
 export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
   const [board, setBoard] = useState(CHECKBOARD);
   const [pawnPromotion, setPawnPromotion] = useState<
-    boolean | [number, number]
+    pawnPromotionType | boolean
   >(false);
   const [check, setCheck] = useState(false);
   const [checkMate, setCheckMate] = useState(false);
@@ -26,7 +28,7 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
     removedPiecesInitialState,
   );
   const [turn, setTurn] = useState<"white" | "black">(TURNS.WHITE);
-  const [moves, setMoves] = useState([]);
+  const [moves, setMoves] = useState({ black: [], white: [] });
 
   const updateBoard = ({
     item,
@@ -77,14 +79,22 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    if (item.name === "king" || item.name === "rook") item.hasMoved = true;
+
     if (
       (item.name === "pawn" && endRow === 0) ||
       (item.name === "pawn" && endRow === 7)
     ) {
-      setPawnPromotion([endRow, endSquare]);
+      setPawnPromotion({
+        item,
+        endRow,
+        endSquare,
+        startRow,
+        startSquare,
+      });
+      return;
     }
 
-    if (item.name === "king" || item.name === "rook") item.hasMoved = true;
     const newBoard = coloneBoard(
       board,
       item,
@@ -99,7 +109,22 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
       addRemovedPieces(endSquareItem);
     }
     setBoard(newBoard);
+    const opponent = turn === TURNS.WHITE ? TURNS.BLACK : TURNS.WHITE;
     setTurn(turn === TURNS.WHITE ? TURNS.BLACK : TURNS.WHITE);
+    const { isCheck, isCheckMate, isTie } = checkMoveResult(newBoard, opponent);
+    if (isCheck) {
+      setCheck(isCheck);
+      if (isCheckMate) setCheckMate(isCheckMate);
+      return;
+    } else {
+      setCheck(false);
+    }
+    if (setTie) setTie(isTie);
+
+    setMoves((prevMoves) => ({
+      ...prevMoves,
+      [turn]: [...prevMoves[turn]],
+    }));
   };
 
   const resetGame = () => {
@@ -109,6 +134,7 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
     setCheckMate(false);
     setTie(false);
     setRemovedPieces(removedPiecesInitialState);
+    setTurn(TURNS.WHITE);
   };
 
   const addRemovedPieces = (piece: Piece) => {
@@ -118,21 +144,30 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
-  const handlePawnPromotion = (piece: string) => {
-    const newBoard = structuredClone(board);
+  const handlePawnPromotion = (piece: { name: string; abbr: string }) => {
+    if (pawnPromotion && typeof pawnPromotion !== "boolean") {
+      const { item, endRow, endSquare, startRow, startSquare } = pawnPromotion;
 
-    if (!Array.isArray(pawnPromotion) || pawnPromotion.length !== 2) {
-      return;
-    }
-
-    const [row, col] = pawnPromotion;
-    if (row !== null && col !== null && newBoard[row]?.[col]) {
-      newBoard[row][col].name = piece;
+      item.name = piece.name;
+      item.abbr = piece.abbr;
+      const newBoard = structuredClone(board);
+      newBoard[endRow][endSquare] = item;
+      newBoard[startRow][startSquare] = null;
       setBoard(newBoard);
       setPawnPromotion(false);
-      return;
+      const opponent = turn === TURNS.WHITE ? TURNS.BLACK : TURNS.WHITE;
+      setTurn(turn === TURNS.WHITE ? TURNS.BLACK : TURNS.WHITE);
+      const { isCheck, isCheckMate, isTie } = checkMoveResult(
+        newBoard,
+        opponent,
+      );
+      if (isCheck) {
+        setCheck(isCheck);
+        if (isCheckMate) setCheckMate(isCheckMate);
+        return;
+      }
+      if (setTie) setTie(isTie);
     }
-    return;
   };
 
   return (

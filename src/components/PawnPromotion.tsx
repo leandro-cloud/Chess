@@ -3,10 +3,13 @@ import { Square } from "./square";
 
 export function PawnPromotion() {
   const { handlePawnPromotion, turn } = useBoardContext();
-  const promotionPieces = ["queen", "rook", "bishop", "knight"];
+  const promotionPieces = [
+    { name: "Queen", abbr: "Q" },
+    { name: "Rook", abbr: "R" },
+    { name: "Bishop", abbr: "B" },
+    { name: "knight", abbr: "N" },
+  ];
 
-  // Mejorar esto
-  const color = turn == "white" ? "black" : "white";
   return (
     <>
       {promotionPieces.map((piece, index) => (
@@ -15,7 +18,7 @@ export function PawnPromotion() {
           key={index}
           onClick={() => handlePawnPromotion(piece)}
         >
-          <Square name={piece} color={color} />
+          <Square name={piece.name} color={turn} />
         </div>
       ))}
     </>

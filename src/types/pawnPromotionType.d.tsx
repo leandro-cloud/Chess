@@ -1,4 +1,9 @@
+import { Piece } from "./chessboard.d";
+
 export type pawnPromotionType = {
-  state: boolean;
-  position: [number | null, number | null];
+  item: Piece;
+  endRow: number;
+  endSquare: number;
+  startRow: number;
+  startSquare: number;
 };
