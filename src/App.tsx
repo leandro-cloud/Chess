@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import "./App.css";
 import { ChessBoard } from "./components/checkboard";
 import { PawnPromotion } from "./components/PawnPromotion";
@@ -7,9 +6,6 @@ import { Turns } from "./components/turns";
 import { Check } from "./components/check";
 import { CheckMate } from "./components/checkMate";
 import { Tie } from "./components/tie";
-import { isKingInCheck } from "./utils/isKingInCheck";
-import { isCheckMate } from "./utils/isCheckMate";
-import { isSlateMate } from "./utils/isSlateMate";
 import { RemovedPieces } from "./components/removedPieces";
 import { MovesDictionary } from "./components/movesDictionary";
 
@@ -19,11 +15,11 @@ function App() {
   return (
     <main
       className={
-        "w-screen h-screen flex flex-col justify-center place-items-center bg-violet-800 relative"
+        "w-screen h-screen flex flex-col justify-center place-items-center bg-carbon-gray relative"
       }
     >
       <div className="h-full">
-        <section className="h-fit w-[100%]">
+        <section className="h-fit w-full mt-1">
           <Turns />
           <div className="text-white h-4 text-center my-4 font-bold">
             {check && !checkMate && <Check turn={turn} />}
@@ -32,31 +28,26 @@ function App() {
 
         <div className="w-full grid grid-cols-[1fr_auto_1fr] gap-6">
           <section
-            className="flex flex-col gap-8 justify-between
-            *:border-2 *:border-white"
+            className="flex flex-col w-full gap-8 justify-evenly
+            *:border-2 *:border-white *:bg-[#2e2e2e] *:rounded-md"
           >
             <RemovedPieces />
           </section>
 
-          <section className={"w-auto h-auto flex flex-col"}>
+          <section className="w-auto h-auto flex flex-col">
             <ChessBoard />
           </section>
 
-          <section className="overflow-auto w-fit max-h-[400px] border-2 border-white">
+          <section className="overflow-auto w-fit h-fit max-h-[400px] border-2 border-white">
             <MovesDictionary />
           </section>
         </div>
-        {checkMate && <CheckMate />}
-        {tie && <Tie />}
       </div>
+      {checkMate && <CheckMate />}
+      {tie && <Tie />}
       {pawnPromotion !== false && (
         <section className="flex gap-8 flex-col justify-center items-center bg-black/80 absolute text-center w-[100%] h-[100%] z-20">
-          <h2 className="text-white text-xl">
-            Elige una pieza para intercambiar:
-          </h2>
-          <div className="grid grid-cols-4 gap-6">
-            <PawnPromotion />
-          </div>
+          <PawnPromotion />
         </section>
       )}
     </main>

@@ -1,3 +1,5 @@
+import { CASTLING_TYPE } from "../constants/castlingTypes";
+import { CastlingType } from "../types/castling.d";
 import { Board, Piece } from "../types/chessboard.d";
 import { checkJump } from "./checkJump";
 import { isSquareUnderAttack } from "./isSquareUnderAttack";
@@ -14,6 +16,8 @@ export const castling = (
   const king = board[row][kingPosition];
   let rookPosition: number | null = null;
   let rook: Piece | null = null;
+
+  let castlingType: CastlingType | null = null;
 
   if (startSquare === 0 || (item.name === "king" && startSquare > endSquare)) {
     rookPosition = 0;
@@ -32,12 +36,12 @@ export const castling = (
     king === null ||
     king.hasMoved
   )
-    return false;
+    return { newBoard: null, castlingType };
 
   const isAllowedMove = checkJump(board, row, rookPosition, row, kingPosition);
 
   if (!isAllowedMove) {
-    return false;
+    return { newBoard: null, castlingType };
   }
 
   const castlingDirectionSquares = rookPosition === 0 ? [2, 3] : [5, 6];
@@ -49,7 +53,9 @@ export const castling = (
       castlingDirectionSquares[i],
       turn,
     );
-    if (underAttack) return false;
+    if (underAttack) {
+      return { newBoard: null, castlingType };
+    }
   }
 
   const newBoard = structuredClone(board);
@@ -57,15 +63,17 @@ export const castling = (
   if (rookPosition === 0) {
     newBoard[row][castlingDirectionSquares[0]] = king;
     newBoard[row][castlingDirectionSquares[1]] = rook;
+    castlingType = CASTLING_TYPE.LONG;
   }
 
   if (rookPosition === 7) {
     newBoard[row][castlingDirectionSquares[0]] = rook;
     newBoard[row][castlingDirectionSquares[1]] = king;
+    castlingType = CASTLING_TYPE.SHORT;
   }
 
   newBoard[row][kingPosition] = null;
   newBoard[row][rookPosition] = null;
 
-  return newBoard;
+  return { newBoard, castlingType };
 };

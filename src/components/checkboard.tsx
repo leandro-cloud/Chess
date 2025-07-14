@@ -55,7 +55,7 @@ export function ChessBoard() {
               return (
                 <div
                   key={squareIndex}
-                  className={`h-[50px] grid grid-rows-8 content-center square-${squareIndex} ${color === true ? "bg-white" : "bg-gray-400"}`}
+                  className={`h-[50px] grid grid-rows-8 content-center square-${squareIndex} ${color === true ? "bg-ligth-beige" : "bg-dark-wood"}`}
                 >
                   <div
                     className={`flex w-[50px] h-[50px] justify-center items-center z-10 relative ${square?.color == turn && "cursor-pointer"} *:w-[90%] *:h-[90%]`}

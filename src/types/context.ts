@@ -35,4 +35,8 @@ export interface BoardContextType {
   }: updateBoardType) => void;
   turn: "white" | "black";
   handlePawnPromotion: (piece: { name: string; abbr: string }) => void;
+  moves: {
+    black: string[];
+    white: string[];
+  };
 }

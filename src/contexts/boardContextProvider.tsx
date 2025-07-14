@@ -10,6 +10,8 @@ import { coloneBoard } from "../utils/coloneBoard";
 import { updateBoardType } from "../types/context";
 import { checkMoveResult } from "../utils/checkMoveResult";
 import { pawnPromotionType } from "../types/pawnPromotionType.d";
+import { makeMoveAbbr } from "../utils/makeMoveAbbr";
+import { DictionaryType } from "../types/dictionary";
 
 const removedPiecesInitialState = {
   black: [],
@@ -39,6 +41,18 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
   }: updateBoardType) => {
     const endSquareItem = board[endRow][endSquare];
 
+    const moveDictionary: DictionaryType = {
+      item,
+      check: false,
+      checkMate: false,
+      pawnPromotion,
+      castling: null,
+      startRow,
+      endRow,
+      endSquare,
+      endSquareItem,
+    };
+
     if (checkMate || tie) return;
 
     if (item === null) return;
@@ -51,7 +65,7 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
       !check &&
       startRow === endRow
     ) {
-      const newBoard = castling(
+      const { newBoard, castlingType } = castling(
         item,
         board,
         startSquare,
@@ -59,9 +73,11 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
         startRow,
         turn,
       );
-      if (newBoard == false) return;
+      if (newBoard == null) return;
       setBoard(newBoard);
       setTurn(turn === TURNS.WHITE ? TURNS.BLACK : TURNS.WHITE);
+      moveDictionary.castling = castlingType;
+      makeMoveAbbr(moveDictionary);
       return;
     }
 
@@ -81,6 +97,7 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
 
     if (item.name === "king" || item.name === "rook") item.hasMoved = true;
 
+    // Pawn promotion
     if (
       (item.name === "pawn" && endRow === 0) ||
       (item.name === "pawn" && endRow === 7)
@@ -114,16 +131,22 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
     const { isCheck, isCheckMate, isTie } = checkMoveResult(newBoard, opponent);
     if (isCheck) {
       setCheck(isCheck);
-      if (isCheckMate) setCheckMate(isCheckMate);
-      return;
+      moveDictionary.check = isCheck;
+      if (isCheckMate) {
+        setCheckMate(isCheckMate);
+        moveDictionary.checkMate = isCheckMate;
+        makeMoveAbbr(moveDictionary);
+        return;
+      }
     } else {
       setCheck(false);
     }
     if (setTie) setTie(isTie);
 
+    const newMoveToDicc = makeMoveAbbr(moveDictionary);
     setMoves((prevMoves) => ({
       ...prevMoves,
-      [turn]: [...prevMoves[turn]],
+      [turn]: [...prevMoves[turn], newMoveToDicc],
     }));
   };
 
@@ -135,6 +158,7 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
     setTie(false);
     setRemovedPieces(removedPiecesInitialState);
     setTurn(TURNS.WHITE);
+    setMoves({ black: [], white: [] });
   };
 
   const addRemovedPieces = (piece: Piece) => {
@@ -148,8 +172,24 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
     if (pawnPromotion && typeof pawnPromotion !== "boolean") {
       const { item, endRow, endSquare, startRow, startSquare } = pawnPromotion;
 
+      const moveDictionary: DictionaryType = {
+        item: { ...item },
+        check,
+        checkMate,
+        pawnPromotion,
+        castling: null,
+        startRow,
+        endRow,
+        endSquare,
+        endSquareItem: board[endRow][endSquare],
+        promotionPieceAbbr: piece.abbr,
+      };
+
+      console.log(moveDictionary);
+
       item.name = piece.name;
       item.abbr = piece.abbr;
+
       const newBoard = structuredClone(board);
       newBoard[endRow][endSquare] = item;
       newBoard[startRow][startSquare] = null;
@@ -163,10 +203,18 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
       );
       if (isCheck) {
         setCheck(isCheck);
-        if (isCheckMate) setCheckMate(isCheckMate);
-        return;
+        moveDictionary.check = isCheck;
+        if (isCheckMate) {
+          setCheckMate(isCheckMate);
+          moveDictionary.checkMate = isCheckMate;
+          makeMoveAbbr(moveDictionary);
+          return;
+        }
+      } else {
+        setCheck(false);
       }
       if (setTie) setTie(isTie);
+      makeMoveAbbr(moveDictionary);
     }
   };
 
@@ -189,6 +237,7 @@ export const BoardContextProvider = ({ children }: { children: ReactNode }) => {
         updateBoard,
         turn,
         handlePawnPromotion,
+        moves,
       }}
     >
       {children}

@@ -3,14 +3,11 @@ import { King } from "../pieces";
 
 export const Turns = () => {
   const { turn } = useBoardContext();
-  const bgColor = turn === "white" ? "black" : "white";
 
   return (
-    <div className="h-10 flex justify-center text-white text-center font-bold gap-4">
+    <div className="h-10 flex justify-center text-ligth-gray text-center font-bold gap-4">
       <h2 className="text-xl text-center">Turn:</h2>
-      <div
-        className={`h-10 w-10 flex justify-center bg-${bgColor} border-2 rounded border${turn}`}
-      >
+      <div className="h-10 w-10 p-[2px] flex justify-center bg-dark-wood rounded-sm">
         <King color={turn} />
       </div>
     </div>
